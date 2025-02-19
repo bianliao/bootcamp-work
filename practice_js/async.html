@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非同步 `CallBack`, `Promise,` `Async/Await`</title>
+</head>
+<body>
+    <h3>非同步 `CallBack`, `Promise,` `Async/Await`</h3>
+    <ul style="list-style: none;">
+        <li style="padding: 12px;">
+            output: 1 <br>
+            output: undefined （程式不會等延遲，所以在這邊會是失效的）<br>
+            過了兩秒後 output: 2 <br>
+            <button onclick="test1()" style="padding: 10px 30px;"> 問題起源 </button>
+        </li>
+        <li style="padding: 12px;">
+            output: 1 <br>
+            過了兩秒後 output: 2 <br>
+            過了兩秒後 output: 7 <br>
+            <button onclick="test2()" style="padding: 10px 30px;"> callback </button>
+        </li>
+        <li style="padding: 12px;">
+            output: 1 <br>
+            過了兩秒後 output: 2 <br>
+            過了兩秒後 output: 7 <br>
+            <button onclick="test3()" style="padding: 10px 30px;"> promise </button>
+        </li>
+        <li style="padding: 12px;">
+            output: 1 <br>
+            過了兩秒後 output: 2 <br>
+            過了兩秒後 output: 7 <br>
+            <button onclick="test4()" style="padding: 10px 30px;"> async/await </button>
+        </li>
+    </ul>
+    <script>
+        // 問題起源，非同步程式 =============================================================================================
+        function delayAdd1(n1, n2, delayTime){
+            //設定排程，延遲一段時間後執行
+            window.setTimeout(function(){
+                console.log(2);
+                return n1+n2; // return function 不是資料
+            }, delayTime);
+            console.log(1);
+        }
+        function test1(){
+            let result=delayAdd1(3,4, 2000);
+            console.log(result);
+        }
+        // output: 1
+        // output: undefined （程式不會等延遲，所以在這邊會是失效的）
+        // 過了兩秒後 output: 2
+
+        // callback =====================================================================================================
+        function delayAdd2(n1, n2, delayTime, callback){
+            //設定排程，延遲一段時間後執行
+            window.setTimeout(function(){
+                console.log(2);
+                // 延遲一段時間之後，計算加法，呼叫 callback 函式
+                callback(n1+n2);
+            }, delayTime);
+            console.log(1);
+        }
+        function test2(){
+            delayAdd2(3,4, 2000, function(result){
+                console.log(result);
+            });
+        }
+        // output: 1
+        // 過了兩秒後 output: 2
+        // 過了兩秒後 output: 7
+
+        // promise =====================================================================================================
+        function delayAdd3(n1, n2, delayTime){
+            console.log(1);
+            //建立 Promise 物件：new Promise(執行函式)
+            return new Promise(function(resolve, reject){
+                window.setTimeout(function(){
+                    console.log(2);
+                    resolve(n1+n2); // 工作完成，呼叫 resolve 函式，並且把結果透過參數傳遞進去
+                }, delayTime);
+            })
+        }
+        function test3(){
+            let promise = delayAdd3(3,4, 2000);
+            promise.then(function(result){
+                console.log(result);
+            }).catch(function(error){
+                console.log("Error", error);
+            })
+        }
+        // output: 1
+        // 過了兩秒後 output: 2
+        // 過了兩秒後 output: 7
+
+        // async/await =====================================================================================================
+        function delayAdd4(n1, n2, delayTime){
+            console.log(1);
+            //建立 Promise 物件：new Promise(執行函式)
+            return new Promise(function(resolve, reject){
+                window.setTimeout(function(){
+                    console.log(2);
+                    resolve(n1+n2); // 工作完成，呼叫 resolve 函式，並且把結果透過參數傳遞進去
+                }, delayTime);
+            })
+        }
+        async function test4(){
+            let result = await delayAdd4(3,4, 2000);
+            console.log(result);
+        }
+        // output: 1
+        // 過了兩秒後 output: 2
+        // 過了兩秒後 output: 7
+    </script>
+    <h3>二次非同步計算</h3>
+    <ul style="list-style: none;">
+        <li style="padding: 12px;">
+            過了兩秒後 output: 第一個答案 7 <br>
+            過了三秒後 output: 第二個答案 5 <br>
+            過了三秒後 output: 一起顯示 (2) [7, 5] <br>
+            過了三秒後 output: 相乘 35 <br>
+            <button onclick="test5()" style="padding: 10px 30px;"> 問題起源 </button>
+        </li>
+        <li style="padding: 12px;">
+            過了兩秒後 output: 第一個答案 7 <br>
+            過了三秒後 output: 第二個答案 5 <br>
+            過了三秒後 output: 相乘 35 <br>
+            <button onclick="test6()" style="padding: 10px 30px;"> callback </button>
+        </li>
+    <script>
+        // promise =====================================================================================================
+        function delayAdd5(n1, n2, delayTime){
+            //建立 Promise 物件：new Promise(執行函式)
+            return new Promise(function(resolve, reject){
+                window.setTimeout(function(){
+                    resolve(n1+n2); // 工作完成，呼叫 resolve 函式，並且把結果透過參數傳遞進去
+                }, delayTime);
+            })
+        }
+        function test5(){
+            let promise1 = delayAdd5(3,4, 2000);
+            let promise2 = delayAdd5(2,3, 3000);
+            promise1.then(function(result){
+                console.log("兩秒後顯示", result);
+            })
+            promise2.then(function(result){
+                console.log("三秒後顯示", result);
+            })
+            Promise.all([promise1, promise2]).then(function(results){
+                console.log("一起顯示", results);
+                let result = results.reduce(function(total, value){
+                    return total*value
+                })
+                console.log("相乘", result)
+            })
+        }
+
+        // async/await =====================================================================================================
+        function delayAdd6(n1, n2, delayTime){
+            //建立 Promise 物件：new Promise(執行函式)
+            return new Promise(function(resolve, reject){
+                window.setTimeout(function(){
+                    resolve(n1+n2); // 工作完成，呼叫 resolve 函式，並且把結果透過參數傳遞進去
+                }, delayTime);
+            })
+        }
+        async function test6(){
+            let result1 = await delayAdd6(3,4, 2000);
+            console.log("兩秒後顯示", result1);
+            let result2 = await delayAdd6(2,3, 3000);
+            console.log("三秒後顯示", result2);
+            let answer = result1*result2;
+            console.log("相乘", answer);
+        }
+    </script>
+</body>
+</html>
