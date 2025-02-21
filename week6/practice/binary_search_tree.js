@@ -91,7 +91,7 @@ console.time("Array 搜尋資料");
 arr.contains(30000000);
 console.timeEnd("Array 搜尋資料");
 
-let bst = new DataInArray();
+let bst = new DataInBTS();
 console.time("BST 插入筆資料");
 for(let i=0;i<1000;i++){
     bst.add(Math.random()*300000000-15000000); //-150000000~150000000
