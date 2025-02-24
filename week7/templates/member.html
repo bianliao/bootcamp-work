@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <link href="{{ url_for('static', path='style.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', path='app.js') }}" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>{{ title }}</h1>
+    </header>
+    <div class="main-section">
+        <main>
+            <h2>{{ username }}，歡迎登入系統</h2>
+            <h3><a href="/signout">登出系統</a></h3>
+        </main>
+    </div>
+    <div class="main-section">
+        <h2>快來留言吧</h2>
+        <form action="/createMessage" method="post" id="create_message_form">
+            <div class="input-section">
+                <div class="input-style">
+                    <label for="create_message">內容</label>
+                    <input type="text" name="create_message_content" id="create_message_content"> 
+                </div>
+                <div class="error" id="create_message_error"></div>
+            </div>
+            <div class="input-style-submit">
+                <input type="submit" value="送出" id="create_message_submit" disabled>
+            </div>
+        </form>
+    </div>
+    <div class="main-section">
+        <ol>
+            {% for message in messages %}
+            <li>
+                <p class="message-member-name">{{ message.name }}</p>
+                <p>：</p>
+                <p class="message-content">{{ message.content }}</p>
+                {% if message.member_id == request.session.get("member_id") %}
+                <i class="mdi mdi-close" message-id="{{ message.id }}"></i>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+</body>
+</html>

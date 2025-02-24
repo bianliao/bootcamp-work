@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week4 FastAPI</title>
+    <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', path='app.js') }}" defer></script>
+</head>
+<body>
+    <header>
+        <h1>{{ title }}</h1> 
+    </header>
+    <main>
+        <h2>{{ subtitle }}</h2>
+        <form action="/signin" method="post">
+            <div class="input-style">
+                <label for="username">帳號</label>
+                <input type="text" name="username" id="username" autocomplete="username"> 
+            </div>
+            <div class="input-style">
+                <label for="password">密碼</label>
+                <input type="password" name="password" id="password" autocomplete="new-password">
+            </div>
+            <div class="input-style">
+                <label for="agree-policy">同意條款</label>
+                <input type="checkbox" id="agree-policy" name="agree-policy">
+            </div>
+            <div class="input-style">
+                <input type="submit" value="登入">
+            </div>
+        </form>
+    </main>
+</body>
+</html>
